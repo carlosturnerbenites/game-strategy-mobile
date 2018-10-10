@@ -1,35 +1,34 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+import {
+  // createStackNavigator,
+  StackNavigator
+} from 'react-navigation';
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import { Root } from 'native-base'
 
-type Props = {};
-export default class App extends Component<Props> {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Lorem Ipsum Dolor</Text>
-      </View>
-    );
-  }
-}
+import {
+  LoginScreen,
+  HomeScreen,
+  RoomScreen,
+  BoardScreen
+} from 'strategyMobile/Screens';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+const App = StackNavigator({
+    Login: { screen: LoginScreen },
+    Home: { screen: HomeScreen },
+    Room: { screen: RoomScreen },
+    Board: { screen: BoardScreen },
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  }
-});
+  {
+    initialRouteName: 'Login',
+    navigationOptions: {
+      headerStyle: {
+        backgroundColor: '#f4511e',
+      },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontWeight: 'bold',
+      },
+    },
+  });
+
+export default App;
