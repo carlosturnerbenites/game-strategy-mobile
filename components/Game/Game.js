@@ -54,10 +54,7 @@ export default class Game extends React.Component {
     )
   }
   onClickBox (box) {
-    console.log('box', box)
-    console.log('this.state.user', this.state.user)
     let data = this.state.user.getAttributes()
-    console.log('data', data)
     data.x = box.x
     data.y = box.y
     db.collection('players').doc(this.state.user.id)

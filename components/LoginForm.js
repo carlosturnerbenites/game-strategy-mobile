@@ -102,6 +102,7 @@ class LoginForm extends React.Component {
   }
   async componentDidMount () {
     try {
+      // AsyncStorage.clear()
       const result = await AsyncStorage.getItem('user')
       const { navigate } = this.props.navigation;
 
@@ -113,11 +114,9 @@ class LoginForm extends React.Component {
           type: "success"
         })
         let user = new Player(data)
-        console.log('user', user)
         navigate('Home', { user })
       }
     } catch (error) {
-      // Error saving data
       console.warn('error', error)
     }
   }

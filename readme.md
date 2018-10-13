@@ -6,3 +6,6 @@ react-native run-android
 
 # open menu dev
 adb shell input keyevent 82
+
+# firebase functions
+firebase deploy --only functions

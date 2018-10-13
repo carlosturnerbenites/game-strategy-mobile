@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "firebase": "^5.5.3",
+    "firebase-admin": "^6.0.0",
+    "firebase-functions": "^2.0.5",
     "native-base": "^2.8.1",
     "react": "16.5.0",
     "react-native": "0.57.2",
