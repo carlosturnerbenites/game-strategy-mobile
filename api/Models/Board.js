@@ -30,14 +30,12 @@ class Board extends Model {
       .doc(this.id)
       .collection('traps')
       .onSnapshot(querySnapshot => {
-        console.warn('watch items')
         var items = []
         querySnapshot.forEach(doc => {
           let data = doc.data()
           data.id = doc.id
           items.push(data)
         })
-        console.warn(items)
         return onOk(items)
       })
   }

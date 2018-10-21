@@ -19,7 +19,7 @@ const App = StackNavigator({
     Board: { screen: BoardScreen },
   },
   {
-    initialRouteName: 'Board', // 'Login',
+    initialRouteName: 'Login', // 'Login',
     navigationOptions: {
       headerStyle: {
         backgroundColor: '#f4511e',
