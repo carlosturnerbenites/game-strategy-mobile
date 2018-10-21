@@ -30,7 +30,6 @@ export default class RoomScreen extends React.Component {
     this.joinToTeam = this.joinToTeam.bind(this);
   }
   joinToTeam (team) {
-    console.log('join to team ' + team)
     let data = this.state.user.getAttributes()
     data.team = team
     db.collection('players').doc(this.state.user.id)
@@ -38,9 +37,7 @@ export default class RoomScreen extends React.Component {
       .then(() => {})
   }
   getPlayerByTeam (team = null) {
-    console.log('team', team)
     let players = this.state.players.filter(player => player.team === team)
-    console.log('players', players)
     return <Card>{players.map(player => {
       return <CardItem key={`player_${player.id}`}>
         <Icon active name="logo-googleplus" />

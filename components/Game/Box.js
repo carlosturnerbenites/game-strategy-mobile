@@ -6,17 +6,26 @@ export default class Board extends React.Component {
     super(props)
     this.state = {
       box: props.box,
-      player: props.player
+      player: props.player,
+      traps: props.traps
     }
   }
   render () {
     let player = <Text></Text>
     if (this.state.player) {
-      player = <Text>{this.state.player.name}</Text>
+      if (this.state.player.alive) {
+        player = <Text style={{color: "green"}}>{this.state.player.name}</Text>
+      } else {
+        player = <Text style={{color: "red"}}>{this.state.player.name}</Text>
+      }
     }
+    let traps = this.state.traps.map(trap => {
+      return <Text key={`key_${trap.id}`}>X</Text>
+    })
     return (
       <View>
         {player}
+        <View>{traps}</View>
         <Text>{this.state.box.x}, {this.state.box.y}</Text>
       </View>
     );
@@ -25,7 +34,8 @@ export default class Board extends React.Component {
     // if (nextProps.palyer !== this.state.palyer) {
     this.setState({
       box: nextProps.box,
-      player: nextProps.player
+      player: nextProps.player,
+      traps: nextProps.traps
     });
   }
   componentDidMount () {

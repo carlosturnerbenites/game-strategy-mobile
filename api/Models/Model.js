@@ -36,8 +36,19 @@ class Model {
           let data = doc.data()
           data.id = doc.id
           items.push(data)
-          return onOk(items)
         })
+        return onOk(items)
+      })
+  }
+
+  watch (onOk) {
+    db
+      .collection(this.ref)
+      .doc(this.id)
+      .onSnapshot(doc => {
+        let data = doc.data()
+        data.id = doc.id
+        return onOk(data)
       })
   }
 }

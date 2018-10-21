@@ -9,7 +9,7 @@ class LoginForm extends React.Component {
   constructor(pros) {
     super(pros)
     this.state = {
-      username: 'Player 1',
+      username: 'P 1',
       password: null,
       loading: false
     }
