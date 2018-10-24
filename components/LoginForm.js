@@ -15,7 +15,8 @@ class LoginForm extends React.Component {
     }
     this.login = this.login.bind(this);
   }
-  alertLoginError () {
+  alertLoginError (err) {
+    console.error(err)
     Alert.alert(
       'Error',
       'Cannot Login',
@@ -29,40 +30,22 @@ class LoginForm extends React.Component {
     const { navigate } = this.props.navigation;
 
     this.setState({ loading: true })
-
-    db.collection('players').where('name', '==', this.state.username)
-      .limit(1)
-      .get()
-      .then(querySnapshot => {
+    Player.findByName(this.state.username)
+      .then(user => {
         this.setState({ loading: false })
-        let doc = querySnapshot.docs[0]
-        if (doc) {
-          let data = doc.data()
-          data.id = doc.id
-          try {
-            // await
-            AsyncStorage.setItem('user', JSON.stringify(data));
-          } catch (error) {
-            Toast.show({
-              text: 'Error save user on storage',
-              buttonText: 'Okay',
-              type: "warning"
-            })
-          }
-
-          Toast.show({
-            text: 'Logged',
-            buttonText: 'Okay',
-            type: "success"
-          })
-          let user = new Player(data)
-          navigate('Home', { user })
-        } else {
-          this.alertLoginError()
-        }
-      }).catch(error => {
+        AsyncStorage.setItem('name', data.name);
+        Toast.show({
+          text: 'Logged',
+          buttonText: 'Okay',
+          type: "success"
+        })
+        user.reset().then(newUser => {
+          navigate('Home', { user: newUser })
+        })
+      })
+      .catch(err => {
         this.setState({ loading: false })
-        this.alertLoginError()
+        this.alertLoginError(err)
       })
   }
   render () {
@@ -102,19 +85,19 @@ class LoginForm extends React.Component {
   }
   async componentDidMount () {
     try {
-      // AsyncStorage.clear()
-      const result = await AsyncStorage.getItem('user')
+      const name = await AsyncStorage.getItem('name')
       const { navigate } = this.props.navigation;
 
-      let data = JSON.parse(result);
-      if (data) {
-        Toast.show({
-          text: 'User in session',
-          buttonText: 'Okay',
-          type: "success"
-        })
-        let user = new Player(data)
-        navigate('Home', { user })
+      if (name) {
+        Player.findByName(name)
+          .then(user => {
+            user.reset().then(newUser => {
+              navigate('Home', { user: newUser })
+            })
+          })
+          .catch(err => {
+              this.alertLoginError(err)
+          })
       }
     } catch (error) {
       console.warn('error', error)

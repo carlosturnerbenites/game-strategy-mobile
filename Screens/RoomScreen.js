@@ -19,6 +19,7 @@ export default class RoomScreen extends React.Component {
       players: []
     }
     this.init = this.init.bind(this);
+    this.joinToTeam = this.joinToTeam.bind(this)
   }
   init () {
     const { navigate } = this.props.navigation;
@@ -26,15 +27,12 @@ export default class RoomScreen extends React.Component {
     const { user } = this.state
     const { room } = this.state
 
-    navigate('Board', { user, room })
-    this.joinToTeam = this.joinToTeam.bind(this);
+    user.toInitialPosition().then(() => {
+      navigate('Board', { user, room })
+    })
   }
   joinToTeam (team) {
-    let data = this.state.user.getAttributes()
-    data.team = team
-    db.collection('players').doc(this.state.user.id)
-      .set(data)
-      .then(() => {})
+    this.state.user.joinToTeam(team).then(newUser => {})
   }
   getPlayerByTeam (team = null) {
     let players = this.state.players.filter(player => player.team === team)

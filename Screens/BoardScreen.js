@@ -22,7 +22,7 @@ export default class BoardScreen extends React.Component {
     return (
       <Game
         height={5}
-        width={5}
+        width={10}
         user={this.state.user}
         room={this.state.room}
       ></Game>

@@ -28,11 +28,8 @@ class Rooms extends React.Component {
   joinToRoom (room) {
     const { user } = this.state
 
-    user.room = room.id
-
-    db.collection('players').doc(user.id)
-      .set(user.getAttributes())
-      .then(() => {
+    user.joinToRoom(room.id)
+      .then(newUser => {
         const { navigate } = this.props.navigation;
         navigate('Room', { room, user })
       })

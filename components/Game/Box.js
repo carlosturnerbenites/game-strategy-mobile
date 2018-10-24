@@ -15,22 +15,22 @@ export default class Board extends React.Component {
     let player = <Text></Text>
     if (this.state.player) {
       if (this.state.player.alive) {
-        player = <Text style={{color: "green"}}>{this.state.player.name}</Text>
+        player = <Text style={{textAlign: 'center', color: "green"}}>{this.state.player.name}</Text>
       } else {
-        player = <Text style={{color: "red"}}>{this.state.player.name}</Text>
+        player = <Text style={{textAlign: 'center', color: "red"}}>{this.state.player.name}</Text>
       }
     }
-    let traps = <Text></Text>
+    let traps
     if (this.state.showTraps) {
       traps = this.state.traps.map(trap => {
-        return <Text key={`key_${trap.id}`}>X</Text>
+        return "X"
       })
     }
+    // <Text>{this.state.box.x}, {this.state.box.y}</Text>
     return (
       <View>
         {player}
-        <View>{traps}</View>
-        <Text>{this.state.box.x}, {this.state.box.y}</Text>
+        <Text style={{ textAlign: 'center', }}>{traps}</Text>
       </View>
     );
   }
