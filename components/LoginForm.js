@@ -33,7 +33,7 @@ class LoginForm extends React.Component {
     Player.findByName(this.state.username)
       .then(user => {
         this.setState({ loading: false })
-        AsyncStorage.setItem('name', data.name);
+        AsyncStorage.setItem('name', user.name);
         Toast.show({
           text: 'Logged',
           buttonText: 'Okay',
