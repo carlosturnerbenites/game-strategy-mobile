@@ -5,19 +5,24 @@ class Player extends Model {
   static ref = 'players'
 
   toInitialPosition () {
+    let width = 11
+    let height = 5
+
     let position
     console.log('this.team', this.team)
     if (this.team === 1) {
       position = {
         x: 0,
-        y: 1
+        y: 0
       }
     } else {
       position = {
         x: 0,
-        y: 3
+        y: width - 1
       }
     }
+
+    console.log('position', position)
 
     return db
       .collection(Player.ref)

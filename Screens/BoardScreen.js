@@ -18,13 +18,19 @@ export default class BoardScreen extends React.Component {
     }
   }
 
+  onFinish = () => {
+    const { navigate } = this.props.navigation;
+    navigate('Home')
+  }
+
   render () {
     return (
       <Game
         height={5}
-        width={10}
+        width={11}
         user={this.state.user}
         room={this.state.room}
+        onFinish={this.onFinish}
       ></Game>
     );
   }

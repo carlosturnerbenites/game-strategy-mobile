@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { db } from 'strategyMobile/firebase/index.js';
 import Room from 'strategyMobile/api/Models/Room'
-import { Text, CardItem, Icon, Right, Card } from 'native-base'
+import { Text, CardItem, Icon, Right, Card, Item, Input, Label, Button } from 'native-base'
 import { withNavigation } from 'react-navigation';
 
 class Rooms extends React.Component {
@@ -13,7 +13,10 @@ class Rooms extends React.Component {
     // check user
     this.state = {
       user: user,
-      rooms: []
+      rooms: [],
+      form: {
+        name: ''
+      }
     }
   }
   onUpdateRooms = (rooms) => {
@@ -34,6 +37,12 @@ class Rooms extends React.Component {
         navigate('Room', { room, user })
       })
   }
+  createRoom = () => {
+    let { name } = this.state.form
+    Room.create({name}).then(room => {
+      console.log('new room', room)
+    })
+  }
   render () {
     /*if (this.state.loading) {
       return (
@@ -52,6 +61,16 @@ class Rooms extends React.Component {
           </CardItem>
         })
       }
+      <View>
+        <Text>{this.state.form.name}</Text>
+        <Item fixedLabel>
+          <Label>Username</Label>
+          <Input onChangeText={(name) => this.setState({ form: { name } })} />
+        </Item>
+        <Button onPress={this.createRoom} rounded light>
+          <Text>Crear</Text>
+        </Button>
+      </View>
     </View>
 
     return (

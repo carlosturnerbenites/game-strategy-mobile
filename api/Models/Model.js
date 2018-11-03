@@ -41,6 +41,24 @@ class Model {
       })
   }
 
+  static create (data) {
+    // this.preCreate(data)
+    // data.size = 3
+
+    // this.validate(data)
+    // if (!data.name) return
+
+    return db.collection(this.ref).add(data)
+      .then(ref => {
+        console.log('Added document with ID: ', ref.id);
+        return new this({
+          id: ref.id,
+          ...data
+        })
+      });
+
+  }
+
   watch (onOk) {
     db
       .collection(this.ref)

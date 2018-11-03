@@ -8,41 +8,33 @@ import Box from 'strategyMobile/components/Game/Box.js'
 import Board from 'strategyMobile/api/Models/Board'
 
 export default class Game extends React.Component {
-  getTestBoard (props) {
-    return new Board({
+  genBoard (props) {
+    return Board.create({
       height: props.height,
       width: props.width,
-      id: "aXrKA0GOaMWFmF0WgMPW",
       time: 10
-    })
-  }
-  getTestUser () {
-    return new Player({
-      id: "AXtnNEfxqqKgHxA2H4Ey",
-      alive: true,
-      lives: 10,
-      name: "P 1",
-      room: "default",
-      team: 1,
-      x: 1,
-      y: 2
-    })
-  }
-  getTestRoom () {
-    return new Room({
-      board: "aXrKA0GOaMWFmF0WgMPW",
-      name: "Default",
-      size: 3
     })
   }
   constructor(props) {
     super(props)
 
     const user = props.user // this.getTestUser()
-    const room = this.getTestRoom() // props.room
-    const board = this.getTestBoard(props)
+    const room = props.room // this.getTestRoom()
+    const loading = true // this.getTestRoom()
+
+    const board = null // this.getTestBoard(props)
+    let promise = this.genBoard(props)
+    console.log(promise)
+    promise
+      .then(board => {
+        console.log('new board', board)
+        this.setState({ board, loading: false })
+        this.state.board.watch(this.onUpdateBoard)
+        this.state.board.watchTraps(this.onUpdateTraps)
+      })
 
     this.state = {
+      loading,
       board,
       players: [],
       traps: [],
@@ -72,7 +64,39 @@ export default class Game extends React.Component {
     }, 1000);
   }
   evaluateGame = () => {
-    this.alert('El juego termino')
+    // verificar
+
+    let width = 11
+    let middle = Math.round(width/2)
+    let height = 5
+
+    let teamOne = this.state.players.filter(player => player.team === 1)
+    console.log('teamOne', teamOne)
+    let teamOneWins = teamOne.filter(player => player.y === (width - 1))
+    console.log('teamOneWins', teamOneWins)
+    let teamTwo = this.state.players.filter(player => player.team === 2)
+    console.log('teamTwo', teamTwo)
+    let teamTwoWins = teamTwo.filter(player => player.y === 0)
+    console.log('teamTwoWins', teamTwoWins)
+
+    let msg = ''
+
+    if (teamOneWins.length === teamTwoWins.length) {
+      msg = 'Empate'
+    } else if (teamOneWins.length > teamTwoWins.length) {
+      msg = 'Gana el equipo 1'
+    } else {
+      msg = 'Gana el equipo 2'
+    }
+
+    Alert.alert(
+      'Termino',
+      msg,
+      [{ text: 'OK', onPress: () => {
+        this.props.onFinish()
+      } }],
+      { cancelable: false }
+    )
   }
   timerGame = () => {
     this.setState({ play: true })
@@ -87,29 +111,6 @@ export default class Game extends React.Component {
       }
       this.setState({ board })
     }, 1000);
-  }
-  loadBoard () {
-    /*
-    db.collection('boards').doc(this.room.board)
-      .get()
-      .then(doc => {
-        let data = doc.data()
-
-        this.initConfigBoard()
-
-        db.collection('boards')
-          .doc(this.room.board)
-          .collection('traps')
-          .onSnapshot(querySnapshot => {
-            var traps = []
-            querySnapshot.forEach(doc => {
-              let data = doc.data()
-              traps.push(data)
-            })
-            this.traps = traps
-          })
-      })
-    */
   }
   alert (msg = 'Hola') {
     /*
@@ -147,7 +148,7 @@ export default class Game extends React.Component {
     this.alert('Click de configuración')
     db
       .collection('boards')
-      .doc(this.state.room.board)
+      .doc(this.state.board.id)
       .collection('traps')
       .add({
         x: box.x,
@@ -155,6 +156,7 @@ export default class Game extends React.Component {
       })
   }
   onClickBox (box) {
+    console.log('onClickBox')
     if (!this.state.play) return this.alert('Game End')
 
     if (this.state.configuring) {
@@ -164,6 +166,11 @@ export default class Game extends React.Component {
     }
   }
   render () {
+    if (this.state.loading) {
+      return <View>
+        <Text>Cagando...</Text>
+      </View>
+    }
     let user
     if (this.state.user) {
       user = <Text style={{textAlign: 'center', flex: 1}}>{this.state.user.name}</Text>
@@ -235,8 +242,8 @@ export default class Game extends React.Component {
   componentDidMount () {
     Player.watch(this.onUpdatePlayer)
     this.timeConfiguring()
-    this.state.board.watch(this.onUpdateBoard)
-    this.state.board.watchTraps(this.onUpdateTraps)
+    // this.state.board.watch(this.onUpdateBoard)
+    // this.state.board.watchTraps(this.onUpdateTraps)
   }
 }
 
