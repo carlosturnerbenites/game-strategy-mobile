@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   },
   board: {
     flex: 1,
-    width: 50 * 10,
+    width: 50 * 11,
   },
   box: {
     flex: 1,

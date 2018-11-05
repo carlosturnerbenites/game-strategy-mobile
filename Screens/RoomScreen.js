@@ -71,37 +71,24 @@ export default class RoomScreen extends React.Component {
       <Container style={{ flex: 1, flexDirection: 'column' }}>
         <View style={{ flex: 1, flexDirection: 'row'}}>
           <Card style={{ flex: 1}}>
-            <CardItem onPress={() => this.joinToTeam(1)} button header bordered>
+            <CardItem onPress={() => this.joinToTeam(1)} button header >
               <Text>Equipo 1</Text>
             </CardItem>
-            <CardItem bordered>
-              <Body>
-                {this.getPlayerByTeam(1)}
-              </Body>
-            </CardItem>
-            <CardItem footer bordered>
-              <Text>#</Text>
+            <CardItem >
+              {this.getPlayerByTeam(1)}
             </CardItem>
           </Card>
           <Card style={{ flex: 1 }}>
-            <CardItem onPress={() => this.joinToTeam(2)} button header bordered>
+            <CardItem onPress={() => this.joinToTeam(2)} button header >
               <Text>Equipo 2</Text>
             </CardItem>
-            <CardItem bordered>
-              <Body>
-                {this.getPlayerByTeam(2)}
-              </Body>
-            </CardItem>
-            <CardItem footer bordered>
-              <Text>#</Text>
+            <CardItem >
+              {this.getPlayerByTeam(2)}
             </CardItem>
           </Card>
         </View>
         <View>
-          <Text>Room: {this.state.room.name}</Text>
           {state}
-          <Text>Players</Text>
-
           {this.getPlayerByTeam(-1)}
 
           <Button
