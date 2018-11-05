@@ -38,9 +38,7 @@ export default class RoomScreen extends React.Component {
     })
   }
   init () {
-    console.log('this.state.user', this.state.user)
     this.state.user.setReady().then(() => {
-      console.log('this.state.room', this.state.room)
       this.roomObserver = this.state.room.watch(this.onUpdateRoom)
     })
   }

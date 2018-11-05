@@ -24,9 +24,7 @@ export default class Game extends React.Component {
 
     const board = null // this.getTestBoard(props)
     // let promise = this.genBoard(props)
-    console.log('room.board', room.board)
     Board.find(room.board, (board) => {
-      console.log('new board', board)
       this.setState({ board, loading: false })
       this.state.board.watch(this.onUpdateBoard)
       this.state.board.watchTraps(this.onUpdateTraps)
@@ -69,13 +67,9 @@ export default class Game extends React.Component {
     let height = 5
 
     let teamOne = this.state.players.filter(player => player.team === 1)
-    console.log('teamOne', teamOne)
     let teamOneWins = teamOne.filter(player => player.y === (width - 1))
-    console.log('teamOneWins', teamOneWins)
     let teamTwo = this.state.players.filter(player => player.team === 2)
-    console.log('teamTwo', teamTwo)
     let teamTwoWins = teamTwo.filter(player => player.y === 0)
-    console.log('teamTwoWins', teamTwoWins)
 
     let msg = ''
 
