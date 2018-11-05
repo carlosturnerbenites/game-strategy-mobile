@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, AsyncStorage } from 'react-native';
 import { Container, Content } from 'native-base'
 import Logout from 'strategyMobile/components/Logout';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import { Text, Item, Input, Label, Button } from 'native-base'
 import Rooms from 'strategyMobile/components/Rooms';
 import Room from 'strategyMobile/api/Models/Room'
+import { db } from 'strategyMobile/firebase/index.js';
 
 export default class HomeScreen extends React.Component {
   constructor(pros) {
@@ -18,7 +19,7 @@ export default class HomeScreen extends React.Component {
   }
   createRoom = () => {
     let { name } = this.state.form
-    Room.create({ name }).then(room => {
+    Room.create({ name, icon: 'grid' }).then(room => {
     })
   }
   render () {
@@ -50,6 +51,18 @@ export default class HomeScreen extends React.Component {
         </Row>
       </Grid>
     )
+  }
+  async componentDidMount () {
+    const config = await AsyncStorage.getItem('config')
+    if (config === null) {
+      db
+        .collection('config')
+        .doc('default')
+        .get()
+        .then(doc => {
+          AsyncStorage.setItem('config', JSON.stringify(doc.data()));
+        })
+    }
   }
 }
 

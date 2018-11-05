@@ -11,6 +11,7 @@ class Logout extends React.Component {
   }
   async logout () {
     await AsyncStorage.removeItem('name')
+    await AsyncStorage.removeItem('config')
     const { navigate } = this.props.navigation;
     navigate('Login')
   }

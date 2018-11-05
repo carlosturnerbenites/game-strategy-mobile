@@ -1,22 +1,28 @@
 import Model from 'strategyMobile/api/Models/Model'
 import { db } from 'strategyMobile/firebase/index.js';
+import { AsyncStorage } from 'react-native';
 
 class Player extends Model {
   static ref = 'players'
+  ref = 'players'
+  ramdomBeetwen (min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+  async toInitialPosition () {
+    let config = JSON.parse(await AsyncStorage.getItem('config'))
 
-  toInitialPosition () {
-    let width = 11
-    let height = 5
-
+    let width = config.widthBoard
+    let height = config.heightBoard
+    let x = this.ramdomBeetwen(0, height)
     let position
     if (this.team === 1) {
       position = {
-        x: 0,
+        x,
         y: 0
       }
     } else {
       position = {
-        x: 0,
+        x,
         y: width - 1
       }
     }
@@ -29,6 +35,7 @@ class Player extends Model {
       .then(() => {
         return this.fill(position)
       })
+
 
   }
   setReady () {
@@ -122,16 +129,33 @@ class Player extends Model {
   canMoveToBox (box) {
     if (this.x === box.x && this.y === box.y) {
       // Moverse al mismo lugar
-      return false
+      return Promise.resolve(false)
     }
     if (
       (box.x > this.x + 1 || box.x < this.x - 1) ||
       (box.y > this.y + 1 || box.y < this.y - 1)
     ) {
       // Moverse a mas de una casilla de distancia
-      return false
+      return Promise.resolve(false)
     }
-    return true
+    return this.positionFree(box.x, box.y)
+    // return Promise.resolve(true)
+  }
+  positionFree (x, y) {
+    return db.collection(this.ref)
+      .where('x', '==', x)
+      .where('y', '==', y)
+      .where('room', '==', this.room)
+      .get()
+      .then(querySnapshot => {
+        let count = querySnapshot.docs.length
+        console.log('count', count)
+        if (count > 0) {
+          return false
+        } else {
+          return true
+        }
+      })
   }
   static findByName (name) {
     if (!name) return Promise.reject(new Error('Invalid Param Name'))

@@ -46,7 +46,7 @@ class Rooms extends React.Component {
     }*/
     let rooms = this.state.rooms.map(room => {
         return <CardItem key={`room_${room.id}`} button onPress={(e) => this.joinToRoom(room)}>
-          <Icon active name="logo-googleplus" />
+          <Icon name={room.icon} />
           <Text>{room.name}</Text>
           <Right>
             <Icon name="arrow-forward" />

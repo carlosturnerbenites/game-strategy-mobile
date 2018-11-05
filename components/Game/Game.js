@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Alert, ToastAndroid, TouchableOpacity } from 'react-native';
+import { StyleSheet, AsyncStorage, Text, View, Alert, ToastAndroid, TouchableOpacity } from 'react-native';
 import { Container } from 'native-base';
 import { db } from 'strategyMobile/firebase/index.js';
 import Player from 'strategyMobile/api/Models/Player'
@@ -36,15 +36,15 @@ export default class Game extends React.Component {
       configuring: false,
       play: true,
       counter: null,
-      time: null
+      time: null,
+      config: null
     }
 
     this.onClickBox = this.onClickBox.bind(this);
   }
   timeConfiguring = () => {
     this.setState({ configuring: true, play: true })
-
-    var counter = 10;
+    var counter = this.state.config.configTime;
     let interval = setInterval(() => {
       this.setState({ counter })
       counter--
@@ -58,9 +58,9 @@ export default class Game extends React.Component {
   evaluateGame = () => {
     // verificar
 
-    let width = 11
+    let width = this.state.config.widthBoard
     let middle = Math.round(width/2)
-    let height = 5
+    let height = this.state.config.heightBoard
 
     let teamOne = this.state.players.filter(player => player.team === 1)
     let teamOneWins = teamOne.filter(player => player.y === (width - 1))
@@ -113,15 +113,22 @@ export default class Game extends React.Component {
       return this.alert('You Dead')
     }
 
+    /*
     if (!user.canMoveToBox(box)) {
       return this.alert('Movimiento invalido')
     }
+    */
 
-    let traps = this.state.traps.filter(trap => trap.x === box.x && trap.y === box.y)
+    user.canMoveToBox(box).then(can => {
+      if (can) {
+        let traps = this.state.traps.filter(trap => trap.x === box.x && trap.y === box.y)
 
-    user.moveToBox(box, traps).then(newUser => {
-      // do
+        user.moveToBox(box, traps).then(newUser => {
+          // do
+        })
+      }
     })
+
   }
   setTrap (box) {
     db
@@ -130,7 +137,9 @@ export default class Game extends React.Component {
       .collection('traps')
       .add({
         x: box.x,
-        y: box.y
+        y: box.y,
+        user: this.state.user.id,
+        team: this.state.user.team,
       })
   }
   onClickBox (box) {
@@ -167,7 +176,7 @@ export default class Game extends React.Component {
           {timer}
           {user}
         </View>
-        <View style={styles.board}>
+        <View style={this.getStylesBoard()}>
           {
             this.state.board.matrix.map((row, iRow) => {
               return (<View
@@ -184,7 +193,7 @@ export default class Game extends React.Component {
                       <Box
                         box={box}
                         player={this.state.players.find(player => player.x === box.x && player.y === box.y)}
-                        traps={this.state.traps.filter(trap => trap.x === box.x && trap.y === box.y)}
+                        traps={this.state.traps.filter(trap => trap.x === box.x && trap.y === box.y && trap.team === this.state.user.team)}
                         showTraps={this.state.configuring && this.state.play}
                       ></Box>
                     </TouchableOpacity></View>
@@ -203,15 +212,26 @@ export default class Game extends React.Component {
       return previousState
     });
   }
+  getStylesBoard = () => {
+    return {
+      flex: 1,
+      width: 50 * this.state.config.widthBoard,
+    }
+  }
   onUpdateBoard = (newBoard) => {
     // this.setState({ time: newBoard.time })
   }
   onUpdateTraps = (traps) => {
     this.setState({ traps })
   }
-  componentDidMount () {
+  async componentDidMount () {
+    const config = JSON.parse(await AsyncStorage.getItem('config'))
+    console.log('config Game componentDidMount', config)
+    this.setState({ config })
+
     this.playersWatcher = Player.watch(this.onUpdatePlayer)
     this.timeConfiguring()
+
   }
   unsub () {
     if (this.playersWatcher) { this.playersWatcher() }
@@ -233,10 +253,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
-  },
-  board: {
-    flex: 1,
-    width: 50 * 11,
   },
   box: {
     flex: 1,

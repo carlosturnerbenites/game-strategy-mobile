@@ -27,8 +27,6 @@ export default class BoardScreen extends React.Component {
   render () {
     return (
       <Game
-        height={5}
-        width={11}
         user={this.state.user}
         room={this.state.room}
         onFinish={this.onFinish}

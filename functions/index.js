@@ -26,8 +26,6 @@ exports.updatePlayer = functions.firestore
     const previousValue = change.before.data();
 
     // access a particular field as you would any JS property
-    console.log('newValue', newValue)
-    console.log('previousValue', previousValue)
 
     if (newValue.ready !== previousValue.ready) {
       // perform desired operations ...
@@ -53,44 +51,36 @@ exports.updatePlayer = functions.firestore
             data.id = doc.id
             players.push(data)
           })
-          console.log('players.ready', players.map(player => player.ready))
           ready = players.every(player => player.ready)
 
-          console.log('ready', ready)
-
-          let dataBoard = {
-            height: 5,
-            width: 11,
-            time: 10
-          }
-          if (ready) {
-            return firestore.collection('boards').add(dataBoard)
-              .then(ref => {
-                return firestore
-                  .collection('rooms')
-                  .doc(newValue.room)
-                  .set({
-                    ready,
-                    board: ref.id
-                  }, {
-                    merge: true
+          return firestore
+            .collection('config')
+            .doc('default')
+            .get()
+            .then(doc => {
+              let config = doc.data()
+              console.log('config', config)
+              let dataBoard = {
+                height: config.heightBoard,
+                width: config.widthBoard,
+                time: config.gameTime
+              }
+              if (ready) {
+                return firestore.collection('boards').add(dataBoard)
+                  .then(ref => {
+                    return firestore
+                      .collection('rooms')
+                      .doc(newValue.room)
+                      .set({ ready, board: ref.id }, { merge: true })
+                      .catch(err => { console.log(err) })
                   })
-              })
-              .catch(err => {
-                console.log(err)
-              })
-          } else {
-            return firestore
-              .collection('rooms')
-              .doc(newValue.room)
-              .set({
-                ready
-              }, {
-                  merge: true
-                })
-          }
-        }).catch(err => {
-          console.log(err)
-        })
+                  .catch(err => { console.log(err) })
+              }
+              return firestore
+                .collection('rooms')
+                .doc(newValue.room)
+                .set({ ready }, { merge: true })
+            }).catch(err => { console.log(err) })
+        }).catch(err => { console.log(err) })
     }
   });

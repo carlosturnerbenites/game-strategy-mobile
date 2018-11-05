@@ -52,11 +52,8 @@ export default class RoomScreen extends React.Component {
     let players = this.state.players.filter(player => player.team === team)
     return <Card>{players.map(player => {
       return <CardItem key={`player_${player.id}`}>
-        <Icon active name="logo-googleplus" />
+        <Icon name={player.icon} />
         <Text>{player.name}</Text>
-        <Right>
-          <Icon name="arrow-forward" />
-        </Right>
       </CardItem>
     })}
     </Card>

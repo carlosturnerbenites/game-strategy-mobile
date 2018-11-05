@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Icon } from 'native-base'
 
 export default class Board extends React.Component {
   constructor(props) {
@@ -15,15 +16,17 @@ export default class Board extends React.Component {
     let player = <Text></Text>
     if (this.state.player) {
       if (this.state.player.alive) {
-        player = <Text style={{textAlign: 'center', color: "green"}}>{this.state.player.name}</Text>
+        player = <Icon style={{ fontSize: 27, color: 'green' }} name={this.state.player.icon}></Icon>
+        //<Text style={{textAlign: 'center', color: "green"}}>{this.state.player.name}</Text>
       } else {
-        player = <Text style={{textAlign: 'center', color: "red"}}>{this.state.player.name}</Text>
+        player = <Icon style={{ fontSize: 27, color: 'red' }} name={this.state.player.icon}></Icon>
+        //<Text style={{textAlign: 'center', color: "red"}}>{this.state.player.name}</Text>
       }
     }
     let traps
     if (this.state.showTraps) {
-      traps = this.state.traps.map(trap => {
-        return "X"
+      traps = this.state.traps.map((trap, index) => {
+        return <Icon key={index} style={{ fontSize: 14, color: 'red' }} name="flame"></Icon>
       })
     }
     // <Text>{this.state.box.x}, {this.state.box.y}</Text>
