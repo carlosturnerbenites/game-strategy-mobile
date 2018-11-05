@@ -39,9 +39,7 @@ class LoginForm extends React.Component {
           buttonText: 'Okay',
           type: "success"
         })
-        user.reset().then(newUser => {
-          navigate('Home', { user: newUser })
-        })
+        navigate('Home', { user })
       })
       .catch(err => {
         this.setState({ loading: false })
@@ -89,14 +87,17 @@ class LoginForm extends React.Component {
       const { navigate } = this.props.navigation;
 
       if (name) {
+        this.setState({ loading: true })
         Player.findByName(name)
           .then(user => {
             user.reset().then(newUser => {
+              this.setState({ loading: false })
               navigate('Home', { user: newUser })
             })
           })
           .catch(err => {
-              this.alertLoginError(err)
+            this.setState({ loading: false })
+            this.alertLoginError(err)
           })
       }
     } catch (error) {

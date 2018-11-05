@@ -30,11 +30,13 @@ class Rooms extends React.Component {
   }
   joinToRoom (room) {
     const { user } = this.state
-    user.joinToRoom(room.id)
-      .then(newUser => {
-        const { navigate } = this.props.navigation;
-        navigate('Room', { room, user })
-      })
+    user.reset().then(newUser => {
+      user.joinToRoom(room.id)
+        .then(newUser => {
+          const { navigate } = this.props.navigation;
+          navigate('Room', { room, user })
+        })
+    })
   }
   createRoom = () => {
     let { name } = this.state.form

@@ -7,6 +7,8 @@ react-native run-android
 # open menu dev
 adb shell input keyevent 82
 
+adb logcat | grep ReactNative
+
 # firebase functions
 firebase deploy --only functions
 
