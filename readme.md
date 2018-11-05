@@ -1,3 +1,7 @@
+# install
+copy config.example.js to config.js
+npm install
+
 # start server js
 npm start
 

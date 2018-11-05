@@ -20,14 +20,11 @@ const App = StackNavigator({
   },
   {
     initialRouteName: 'Login',
+    headerMode: 'none',
     navigationOptions: {
-      headerStyle: {
-        backgroundColor: '#f4511e',
-      },
-      headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
+      // headerStyle: { backgroundColor: '#f4511e', },
+      // headerTintColor: '#fff',
+      // headerTitleStyle: { fontWeight: 'bold', },
     },
   });
 

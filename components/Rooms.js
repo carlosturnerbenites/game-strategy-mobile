@@ -6,6 +6,8 @@ import { Text, CardItem, Icon, Right, Card, Item, Input, Label, Button } from 'n
 import { withNavigation } from 'react-navigation';
 
 class Rooms extends React.Component {
+  roomsWatcher = null
+
   constructor(props) {
     super(props)
     const { navigation } = props;
@@ -26,7 +28,7 @@ class Rooms extends React.Component {
     });
   }
   loadRooms () {
-    Room.watch(this.onUpdateRooms)
+    this.roomsWatcher = Room.watch(this.onUpdateRooms)
   }
   joinToRoom (room) {
     const { user } = this.state
@@ -84,6 +86,12 @@ class Rooms extends React.Component {
   }
   componentDidMount () {
     this.loadRooms()
+  }
+  unsub () {
+    if (this.roomsWatcher) { this.roomsWatcher() }
+  }
+  componentWillUnmount () {
+    this.unsub()
   }
 }
 

@@ -5,7 +5,8 @@ import { db } from 'strategyMobile/firebase/index.js';
 import Player from 'strategyMobile/api/Models/Player'
 
 export default class RoomScreen extends React.Component {
-  roomObserver = null
+  roomWatcher = null
+  playersWatcher = null
 
   constructor(props) {
     super(props)
@@ -29,17 +30,19 @@ export default class RoomScreen extends React.Component {
     const { user } = this.state
     const { room } = this.state
 
-    if (this.roomObserver) {
-      this.roomObserver()
-    }
+    this.unsub()
 
     user.toInitialPosition().then(() => {
       navigate('Board', { user, room })
     })
   }
+  unsub () {
+    if (this.roomWatcher) { this.roomWatcher() }
+    if (this.playersWatcher) { this.playersWatcher() }
+  }
   init () {
     this.state.user.setReady().then(() => {
-      this.roomObserver = this.state.room.watch(this.onUpdateRoom)
+      this.roomWatcher = this.state.room.watch(this.onUpdateRoom)
     })
   }
   joinToTeam (team) {
@@ -111,26 +114,21 @@ export default class RoomScreen extends React.Component {
       </Container>
     )
   }
-  onUpdateRoom = (newRoom) => {
-    if (newRoom.ready) {
+  onUpdateRoom = (room) => {
+    this.setState({ room })
+    if (room.ready) {
       this.onRoomReady()
     }
   }
+  onUpdatePlayer = (players) => {
+    this.setState({ players });
+  }
   componentDidMount () {
-    db.collection('players')
-      .where('room', '==', this.state.room.id)
-      .onSnapshot(querySnapshot => {
-        var players = []
-        querySnapshot.forEach(doc => {
-          let data = doc.data()
-          data.id = doc.id
-          players.push(new Player(data))
-        })
-        this.setState(previousState => {
-          previousState.players = players
-          return previousState
-        });
-      })
+    this.state.room.reset()
+    this.playersWatcher = Player.watchByRoom(this.state.room.id, this.onUpdatePlayer)
+  }
+  componentWillUnmount () {
+    this.unsub()
   }
 }
 

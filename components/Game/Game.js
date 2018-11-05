@@ -8,26 +8,22 @@ import Box from 'strategyMobile/components/Game/Box.js'
 import Board from 'strategyMobile/api/Models/Board'
 
 export default class Game extends React.Component {
-  genBoard (props) {
-    return Board.create({
-      height: props.height,
-      width: props.width,
-      time: 10
-    })
-  }
+  playersWatcher = null
+  boardWatcher = null
+  BoardTrapsWatcher = null
+
   constructor(props) {
     super(props)
 
-    const user = props.user // this.getTestUser()
-    const room = props.room // this.getTestRoom()
-    const loading = true // this.getTestRoom()
+    const user = props.user
+    const room = props.room
+    const loading = true
 
-    const board = null // this.getTestBoard(props)
-    // let promise = this.genBoard(props)
+    const board = null
     Board.find(room.board, (board) => {
       this.setState({ board, loading: false })
-      this.state.board.watch(this.onUpdateBoard)
-      this.state.board.watchTraps(this.onUpdateTraps)
+      this.boardWatcher = this.state.board.watch(this.onUpdateBoard)
+      this.BoardTrapsWatcher = this.state.board.watchTraps(this.onUpdateTraps)
     })
 
     this.state = {
@@ -37,8 +33,8 @@ export default class Game extends React.Component {
       traps: [],
       user,
       room,
-      configuring: false, // true,
-      play: true, // true,
+      configuring: false,
+      play: true,
       counter: null,
       time: null
     }
@@ -104,14 +100,6 @@ export default class Game extends React.Component {
     }, 1000);
   }
   alert (msg = 'Hola') {
-    /*
-    Alert.alert(
-      'Title',
-      msg,
-      [{ text: 'OK', onPress: () => { } }],
-      { cancelable: false }
-    )
-    */
     ToastAndroid.showWithGravity(
       msg,
       ToastAndroid.SHORT,
@@ -132,11 +120,10 @@ export default class Game extends React.Component {
     let traps = this.state.traps.filter(trap => trap.x === box.x && trap.y === box.y)
 
     user.moveToBox(box, traps).then(newUser => {
-      this.alert('Click de Juego')
+      // do
     })
   }
   setTrap (box) {
-    this.alert('Click de configuración')
     db
       .collection('boards')
       .doc(this.state.board.id)
@@ -221,55 +208,46 @@ export default class Game extends React.Component {
   }
   onUpdateTraps = (traps) => {
     this.setState({ traps })
-    /*
-    this.setState(previousState => {
-      previousState.traps = traps
-      return previousState
-    });
-    */
   }
   componentDidMount () {
-    Player.watch(this.onUpdatePlayer)
+    this.playersWatcher = Player.watch(this.onUpdatePlayer)
     this.timeConfiguring()
-    // this.state.board.watch(this.onUpdateBoard)
-    // this.state.board.watchTraps(this.onUpdateTraps)
+  }
+  unsub () {
+    if (this.playersWatcher) { this.playersWatcher() }
+    if (this.boardWatcher) { this.boardWatcher() }
+    if (this.BoardTrapsWatcher) { this.BoardTrapsWatcher() }
+  }
+  componentWillUnmount () {
+    this.unsub()
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    // marginTop: 50,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
   },
   info: {
-    // flex: 1,
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
   board: {
-    // marginTop: 50,
     flex: 1,
     width: 50 * 10,
-    // alignItems: 'center',
-    // justifyContent: 'center'
   },
   box: {
     flex: 1,
-    // alignSelf: 'stretch',
     width: 50,
     height: 50,
-    // backgroundColor: 'powderblue',
     borderWidth: 0.5,
     borderColor: '#d6d7da'
   },
   row: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    // marginBottom: 10,
-    // alignSelf: 'stretch'
+    justifyContent: 'space-between'
   }
 });

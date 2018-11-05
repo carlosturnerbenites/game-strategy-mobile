@@ -29,7 +29,7 @@ class Model {
   }
 
   static watch (onOk) {
-    db.collection(this.ref)
+    return db.collection(this.ref)
       .onSnapshot(querySnapshot => {
         var items = []
         querySnapshot.forEach(doc => {

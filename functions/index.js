@@ -26,8 +26,12 @@ exports.updatePlayer = functions.firestore
     const previousValue = change.before.data();
 
     // access a particular field as you would any JS property
+    console.log('newValue', newValue)
+    console.log('previousValue', previousValue)
+
     if (newValue.ready !== previousValue.ready) {
       // perform desired operations ...
+      /*
       firestore
         .collection('rooms')
         .doc(newValue.room)
@@ -35,17 +39,21 @@ exports.updatePlayer = functions.firestore
           {n: Math.random()},
           {merge: true}
         )
+      */
 
       firestore
         .collection('players')
         .where('room', '==', newValue.room)
-        .onSnapshot(querySnapshot => {
+        // .onSnapshot(querySnapshot => {
+        .get()
+        .then(querySnapshot => {
           var players = []
           querySnapshot.forEach(doc => {
             let data = doc.data()
             data.id = doc.id
             players.push(data)
           })
+          console.log('players.ready', players.map(player => player.ready))
           ready = players.every(player => player.ready)
 
           console.log('ready', ready)
@@ -81,7 +89,8 @@ exports.updatePlayer = functions.firestore
                   merge: true
                 })
           }
-
+        }).catch(err => {
+          console.log(err)
         })
     }
   });

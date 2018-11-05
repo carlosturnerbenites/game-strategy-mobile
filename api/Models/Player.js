@@ -150,6 +150,19 @@ class Player extends Model {
         }
       })
   }
+  static watchByRoom (roomId, onOk) {
+    return db.collection(this.ref)
+      .where('room', '==', roomId)
+      .onSnapshot(querySnapshot => {
+        var players = []
+        querySnapshot.forEach(doc => {
+          let data = doc.data()
+          data.id = doc.id
+          players.push(new Player(data))
+        })
+        return onOk(players)
+      })
+  }
 }
 
 export default Player
