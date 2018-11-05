@@ -23,15 +23,14 @@ export default class Game extends React.Component {
     const loading = true // this.getTestRoom()
 
     const board = null // this.getTestBoard(props)
-    let promise = this.genBoard(props)
-    console.log(promise)
-    promise
-      .then(board => {
-        console.log('new board', board)
-        this.setState({ board, loading: false })
-        this.state.board.watch(this.onUpdateBoard)
-        this.state.board.watchTraps(this.onUpdateTraps)
-      })
+    // let promise = this.genBoard(props)
+    console.log('room.board', room.board)
+    Board.find(room.board, (board) => {
+      console.log('new board', board)
+      this.setState({ board, loading: false })
+      this.state.board.watch(this.onUpdateBoard)
+      this.state.board.watchTraps(this.onUpdateTraps)
+    })
 
     this.state = {
       loading,
@@ -53,7 +52,6 @@ export default class Game extends React.Component {
 
     var counter = 10;
     let interval = setInterval(() => {
-      // console.log('counter', counter)
       this.setState({ counter })
       counter--
       if (counter <= 0) {
@@ -103,7 +101,6 @@ export default class Game extends React.Component {
     let board = this.state.board;
     let intervalGame = setInterval(() => {
       board.time--
-      console.log('board.time', board.time)
       if (board.time <= 0) {
         clearInterval(intervalGame)
         this.setState({ play: false })
@@ -156,7 +153,6 @@ export default class Game extends React.Component {
       })
   }
   onClickBox (box) {
-    console.log('onClickBox')
     if (!this.state.play) return this.alert('Game End')
 
     if (this.state.configuring) {
@@ -230,7 +226,6 @@ export default class Game extends React.Component {
     // this.setState({ time: newBoard.time })
   }
   onUpdateTraps = (traps) => {
-    console.log('onUpdateTraps', traps)
     this.setState({ traps })
     /*
     this.setState(previousState => {

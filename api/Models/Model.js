@@ -35,7 +35,7 @@ class Model {
         querySnapshot.forEach(doc => {
           let data = doc.data()
           data.id = doc.id
-          items.push(data)
+          items.push(new this(data))
         })
         return onOk(items)
       })
@@ -50,7 +50,6 @@ class Model {
 
     return db.collection(this.ref).add(data)
       .then(ref => {
-        console.log('Added document with ID: ', ref.id);
         return new this({
           id: ref.id,
           ...data
@@ -59,14 +58,24 @@ class Model {
 
   }
 
+  static find (id, onOk) {
+    return db.collection(this.ref).doc(id)
+      .onSnapshot(doc => {
+        let data = doc.data()
+        data.id = doc.id
+        return onOk(new this(data))
+      })
+
+  }
+
   watch (onOk) {
-    db
+    return db
       .collection(this.ref)
       .doc(this.id)
       .onSnapshot(doc => {
         let data = doc.data()
         data.id = doc.id
-        return onOk(data)
+        return onOk(new this.constructor(data))
       })
   }
 }

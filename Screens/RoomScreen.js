@@ -5,6 +5,8 @@ import { db } from 'strategyMobile/firebase/index.js';
 import Player from 'strategyMobile/api/Models/Player'
 
 export default class RoomScreen extends React.Component {
+  roomObserver = null
+
   constructor(props) {
     super(props)
 
@@ -21,14 +23,25 @@ export default class RoomScreen extends React.Component {
     this.init = this.init.bind(this);
     this.joinToTeam = this.joinToTeam.bind(this)
   }
-  init () {
+  onRoomReady () {
     const { navigate } = this.props.navigation;
 
     const { user } = this.state
     const { room } = this.state
 
+    if (this.roomObserver) {
+      this.roomObserver()
+    }
+
     user.toInitialPosition().then(() => {
       navigate('Board', { user, room })
+    })
+  }
+  init () {
+    console.log('this.state.user', this.state.user)
+    this.state.user.setReady().then(() => {
+      console.log('this.state.room', this.state.room)
+      this.roomObserver = this.state.room.watch(this.onUpdateRoom)
     })
   }
   joinToTeam (team) {
@@ -49,6 +62,10 @@ export default class RoomScreen extends React.Component {
   }
   render () {
 
+    let state = <Text></Text>
+    if (this.state.room.ready) {
+      state = <Text>Esperan ...</Text>
+    }
     return (
       <Container style={{ flex: 1, flexDirection: 'column' }}>
         <View style={{ flex: 1, flexDirection: 'row'}}>
@@ -81,7 +98,7 @@ export default class RoomScreen extends React.Component {
         </View>
         <View>
           <Text>Room: {this.state.room.name}</Text>
-
+          {state}
           <Text>Players</Text>
 
           {this.getPlayerByTeam(-1)}
@@ -95,6 +112,11 @@ export default class RoomScreen extends React.Component {
         </View>
       </Container>
     )
+  }
+  onUpdateRoom = (newRoom) => {
+    if (newRoom.ready) {
+      this.onRoomReady()
+    }
   }
   componentDidMount () {
     db.collection('players')

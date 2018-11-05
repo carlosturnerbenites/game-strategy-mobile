@@ -24,7 +24,6 @@ class Board extends Model {
     }
   }
   watchTraps (onOk) {
-    console.log(`${this.ref}/${this.id}/traps`)
     db
       .collection(this.ref)
       .doc(this.id)

@@ -9,7 +9,6 @@ class Player extends Model {
     let height = 5
 
     let position
-    console.log('this.team', this.team)
     if (this.team === 1) {
       position = {
         x: 0,
@@ -21,9 +20,6 @@ class Player extends Model {
         y: width - 1
       }
     }
-
-    console.log('position', position)
-
     return db
       .collection(Player.ref)
       .doc(this.id)
@@ -34,6 +30,18 @@ class Player extends Model {
         return this.fill(position)
       })
 
+  }
+  setReady () {
+    let data = { ready: true }
+    return db
+      .collection(Player.ref)
+      .doc(this.id)
+      .set(data, {
+        merge: true
+      })
+      .then(() => {
+        return this.fill(data)
+      })
   }
   moveToBox (box, traps) {
     let data = {
@@ -69,13 +77,13 @@ class Player extends Model {
   reset () {
     let defaults = {
       alive: true,
+      ready: false,
       lives: 3,
       room: null,
       team: -1,
       x: -1,
       y: -1
     }
-    console.log('Player.ref', Player.ref)
     return db
       .collection(Player.ref)
       .doc(this.id)

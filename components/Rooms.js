@@ -30,7 +30,8 @@ class Rooms extends React.Component {
   }
   joinToRoom (room) {
     const { user } = this.state
-
+    console.log('joinToRoom')
+    console.log('room', room)
     user.joinToRoom(room.id)
       .then(newUser => {
         const { navigate } = this.props.navigation;
@@ -40,7 +41,6 @@ class Rooms extends React.Component {
   createRoom = () => {
     let { name } = this.state.form
     Room.create({name}).then(room => {
-      console.log('new room', room)
     })
   }
   render () {
