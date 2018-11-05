@@ -2,9 +2,6 @@ package com.strategymobile;
 
 import com.facebook.react.ReactActivity;
 
-import android.content.Intent; // Custom
-import android.content.res.Configuration; // Custom
-
 public class MainActivity extends ReactActivity {
 
     /**
@@ -14,14 +11,5 @@ public class MainActivity extends ReactActivity {
     @Override
     protected String getMainComponentName() {
         return "strategyMobile";
-    }
-
-    // Custom
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Intent intent = new Intent("onConfigurationChanged");
-        intent.putExtra("newConfig", newConfig);
-        this.sendBroadcast(intent);
     }
 }

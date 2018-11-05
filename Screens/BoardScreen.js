@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Container, Content, Text } from 'native-base'
 import Game from 'strategyMobile/components/Game/Game';
-import Orientation from 'react-native-orientation';
 
 export default class BoardScreen extends React.Component {
   constructor(props) {
@@ -35,10 +34,6 @@ export default class BoardScreen extends React.Component {
         onFinish={this.onFinish}
       ></Game>
     );
-  }
-
-  componentDidMount () {
-    Orientation.lockToLandscape();
   }
 }
 
