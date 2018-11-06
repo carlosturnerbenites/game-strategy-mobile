@@ -18,9 +18,9 @@ export default class BoardScreen extends React.Component {
   }
 
   onFinish = () => {
-    this.state.user.reset().then(() => {
+    this.state.user.reset().then((user) => {
       const { navigate } = this.props.navigation;
-      navigate('Home')
+      navigate('Home', { user })
     })
   }
 

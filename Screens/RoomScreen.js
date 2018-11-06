@@ -75,6 +75,14 @@ export default class RoomScreen extends React.Component {
   render () {
 
     let state = <Text></Text>
+
+    let currentUser = <View>
+      <Text>
+        <Icon name={this.state.user.icon}></Icon>
+        {this.state.user.name}
+      </Text>
+    </View>
+
     if (this.state.user.ready) {
       let playersState = this.state.players.map((player, index) => {
         let icon
@@ -98,6 +106,7 @@ export default class RoomScreen extends React.Component {
       })
       return (
         <Container style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          {currentUser}
           <ActivityIndicator size="large" color="#0000ff" />
 
           <Text>Listo, Esperando a Jugadores ...</Text>
@@ -118,6 +127,7 @@ export default class RoomScreen extends React.Component {
     }
     return (
       <Container style={{ flex: 1, flexDirection: 'column' }}>
+        {currentUser}
         <View style={{ flex: 1, flexDirection: 'row'}}>
           <Card style={{ flex: 1}}>
             <CardItem onPress={() => this.joinToTeam(1)} button header >

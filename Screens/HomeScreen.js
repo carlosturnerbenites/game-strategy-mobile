@@ -1,17 +1,22 @@
 import React from 'react';
-import { StyleSheet, AsyncStorage } from 'react-native';
+import { StyleSheet, AsyncStorage, View } from 'react-native';
 import { Container, Content } from 'native-base'
 import Logout from 'strategyMobile/components/Logout';
 import { Col, Row, Grid } from 'react-native-easy-grid';
-import { Text, Item, Input, Label, Button } from 'native-base'
+import { Text, Item, Input, Label, Button, Icon } from 'native-base'
 import Rooms from 'strategyMobile/components/Rooms';
 import Room from 'strategyMobile/api/Models/Room'
 import { db } from 'strategyMobile/firebase/index.js';
 
 export default class HomeScreen extends React.Component {
-  constructor(pros) {
-    super(pros)
+  constructor(props) {
+    super(props)
+
+    const { navigation } = props;
+    const user = navigation.getParam('user', null);
+
     this.state = {
+      user,
       form: {
         name: ''
       }
@@ -23,10 +28,18 @@ export default class HomeScreen extends React.Component {
     })
   }
   render () {
+    let currentUser = <View>
+      <Text>
+        <Icon name={this.state.user.icon}></Icon>
+        {this.state.user.name}
+      </Text>
+    </View>
+
     return (
       <Grid>
         <Row size={70}>
           <Col>
+            {currentUser}
             <Rooms></Rooms>
           </Col>
         </Row>

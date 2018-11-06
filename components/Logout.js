@@ -4,8 +4,8 @@ import { Button, Text, Container } from 'native-base'
 import { withNavigation } from 'react-navigation';
 
 class Logout extends React.Component {
-  constructor(pros) {
-    super(pros)
+  constructor(props) {
+    super(props)
 
     this.logout = this.logout.bind(this)
   }

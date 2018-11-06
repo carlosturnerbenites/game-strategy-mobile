@@ -64,9 +64,12 @@ export default class Game extends React.Component {
     let middle = Math.round(width/2)
     let height = this.state.config.heightBoard
 
-    let teamOne = this.state.players.filter(player => player.team === 1)
+    let players = this.state.players.filter(player => player.alive)
+
+    let teamOne = players.filter(player => player.team === 1)
     let teamOneWins = teamOne.filter(player => player.y === (width - 1))
-    let teamTwo = this.state.players.filter(player => player.team === 2)
+
+    let teamTwo = players.filter(player => player.team === 2)
     let teamTwoWins = teamTwo.filter(player => player.y === 0)
 
     let msg = ''
@@ -202,6 +205,7 @@ export default class Game extends React.Component {
         invalidMove = <Icon name="close-circle" style={{fontSize: 16, color: 'red'}}></Icon>
       }
       user = <Text style={{textAlign: 'center', flex: 1}}>
+        <Icon name={this.state.user.icon} style={{ fontSize: 16 }}></Icon>
         {this.state.user.name}
         {moving}
         {invalidMove}

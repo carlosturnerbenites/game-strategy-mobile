@@ -6,8 +6,8 @@ import { Button, Text, Form, Item, Label, Input, Root, Container } from 'native-
 import { withNavigation } from 'react-navigation';
 
 class LoginForm extends React.Component {
-  constructor(pros) {
-    super(pros)
+  constructor(props) {
+    super(props)
     this.state = {
       username: 'P 1',
       password: '',
