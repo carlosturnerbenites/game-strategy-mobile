@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Container, Card, CardItem, Icon, Right, Text, Body, Button } from 'native-base'
+import { StyleSheet, View, ActivityIndicator, ToastAndroid } from 'react-native';
+import { Container, Card, CardItem, Icon, Text, Fab, List, ListItem, Body, Right } from 'native-base'
 import { db } from 'strategyMobile/firebase/index.js';
 import Player from 'strategyMobile/api/Models/Player'
 
@@ -22,6 +22,7 @@ export default class RoomScreen extends React.Component {
       players: []
     }
     this.init = this.init.bind(this);
+    this.cancel = this.cancel.bind(this);
     this.joinToTeam = this.joinToTeam.bind(this)
   }
   onRoomReady () {
@@ -41,12 +42,25 @@ export default class RoomScreen extends React.Component {
     if (this.playersWatcher) { this.playersWatcher() }
   }
   init () {
-    this.state.user.setReady().then(() => {
+    this.state.user.setReady().then((user) => {
+      this.setState({ user })
       this.roomWatcher = this.state.room.watch(this.onUpdateRoom)
+    }).catch(err => {
+      ToastAndroid.show('Aun no esta listo', ToastAndroid.SHORT);
+    })
+  }
+  cancel () {
+    this.state.user.setReady(false).then((user) => {
+      this.setState({ user })
+      if (this.roomWatcher) this.roomWatcher()
     })
   }
   joinToTeam (team) {
-    this.state.user.joinToTeam(team).then(newUser => {})
+    this.state.user.joinToTeam(team).then(user => {
+      this.setState({ user })
+    }).catch(err => {
+      ToastAndroid.show('No se puede unir al equipo', ToastAndroid.SHORT);
+    })
   }
   getPlayerByTeam (team = null) {
     let players = this.state.players.filter(player => player.team === team)
@@ -61,8 +75,46 @@ export default class RoomScreen extends React.Component {
   render () {
 
     let state = <Text></Text>
-    if (this.state.room.ready) {
-      state = <Text>Esperan ...</Text>
+    if (this.state.user.ready) {
+      let playersState = this.state.players.map((player, index) => {
+        let icon
+        if (player.ready) {
+          icon = <Icon style={{ color: 'green' }} name="checkmark-circle" />
+        } else {
+          icon = <Icon style={{ color: 'red' }} name="close-circle" />
+        }
+        return (<CardItem key={`plaer_state_${index}`}>
+
+            <Text style={{margin: 2}}>
+              {icon}
+              {player.name}
+            </Text>
+
+            <Text style={{margin: 2}}>
+              <Icon name="people"></Icon>
+              {player.team}
+            </Text>
+          </CardItem>)
+      })
+      return (
+        <Container style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#0000ff" />
+
+          <Text>Listo, Esperando a Jugadores ...</Text>
+
+          <Card>
+            {playersState}
+          </Card>
+
+          <Fab
+            direction="up"
+            style={{ backgroundColor: 'red' }}
+            position="bottomRight"
+            onPress={this.cancel}>
+            <Icon name="close-circle" />
+          </Fab>
+        </Container>
+      )
     }
     return (
       <Container style={{ flex: 1, flexDirection: 'column' }}>
@@ -86,13 +138,19 @@ export default class RoomScreen extends React.Component {
         </View>
         <View>
           {state}
-          {this.getPlayerByTeam(-1)}
+          <Card>
+            <CardItem>
+              {this.getPlayerByTeam(-1)}
+            </CardItem>
+          </Card>
 
-          <Button
-            onPress={this.init}
-          >
-          <Text>Iniciar</Text>
-          </Button>
+          <Fab
+            direction="up"
+            style={{ backgroundColor: '#5067FF' }}
+            position="bottomRight"
+            onPress={this.init}>
+            <Icon name="checkmark-circle" />
+          </Fab>
 
         </View>
       </Container>

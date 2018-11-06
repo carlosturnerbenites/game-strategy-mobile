@@ -17,10 +17,8 @@ export default class Board extends React.Component {
     if (this.state.player) {
       if (this.state.player.alive) {
         player = <Icon style={{ fontSize: 27, color: 'green' }} name={this.state.player.icon}></Icon>
-        //<Text style={{textAlign: 'center', color: "green"}}>{this.state.player.name}</Text>
       } else {
         player = <Icon style={{ fontSize: 27, color: 'red' }} name={this.state.player.icon}></Icon>
-        //<Text style={{textAlign: 'center', color: "red"}}>{this.state.player.name}</Text>
       }
     }
     let traps
@@ -29,11 +27,10 @@ export default class Board extends React.Component {
         return <Icon key={index} style={{ fontSize: 14, color: 'red' }} name="flame"></Icon>
       })
     }
-    // <Text>{this.state.box.x}, {this.state.box.y}</Text>
     return (
-      <View>
+      <View style={{ flexDirection: "row", flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         {player}
-        <Text style={{ textAlign: 'center', }}>{traps}</Text>
+        {traps}
       </View>
     );
   }

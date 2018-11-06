@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, AsyncStorage, Text, View, Alert, ToastAndroid, TouchableOpacity } from 'react-native';
-import { Container } from 'native-base';
+import { Container, Icon } from 'native-base';
 import { db } from 'strategyMobile/firebase/index.js';
 import Player from 'strategyMobile/api/Models/Player'
 import Room from 'strategyMobile/api/Models/Room'
@@ -34,6 +34,8 @@ export default class Game extends React.Component {
       user,
       room,
       configuring: false,
+      moving: false,
+      invalidMove: false,
       play: true,
       counter: null,
       time: null,
@@ -107,6 +109,8 @@ export default class Game extends React.Component {
     );
   }
   moveTo (box) {
+    if (this.state.moving) return
+
     let user = this.state.user
 
     if (!user.alive) {
@@ -119,34 +123,64 @@ export default class Game extends React.Component {
     }
     */
 
+   this.setState({moving: true})
     user.canMoveToBox(box).then(can => {
       if (can) {
         let traps = this.state.traps.filter(trap => trap.x === box.x && trap.y === box.y)
-
         user.moveToBox(box, traps).then(newUser => {
-          // do
+          this.setState({moving: false})
         })
+      } else {
+        this.setState({moving: false})
+        this.setState({invalidMove: true})
+        setTimeout(() => {
+          this.setState({invalidMove: false})
+        }, 300);
       }
     })
 
   }
   setTrap (box) {
-    db
+    const MAX_TRAPS_BY_PLAYER = 3
+
+    return db
       .collection('boards')
       .doc(this.state.board.id)
       .collection('traps')
-      .add({
-        x: box.x,
-        y: box.y,
-        user: this.state.user.id,
-        team: this.state.user.team,
+      .where('user', '==', this.state.user.id)
+      .get()
+      .then(query => {
+        let count = query.docs.length
+        console.log('count', count)
+        if (count >= MAX_TRAPS_BY_PLAYER) {
+          console.log('err')
+          throw new Error('Max Traps')
+        } else {
+          return db
+            .collection('boards')
+            .doc(this.state.board.id)
+            .collection('traps')
+            .add({
+              x: box.x,
+              y: box.y,
+              user: this.state.user.id,
+              team: this.state.user.team,
+            })
+        }
       })
+
   }
   onClickBox (box) {
     if (!this.state.play) return this.alert('Game End')
 
     if (this.state.configuring) {
       this.setTrap(box)
+      .catch(err => {
+        ToastAndroid.show(
+          'No se puede poner la bomba',
+          ToastAndroid.SHORT
+        );
+      })
     } else {
       this.moveTo(box)
     }
@@ -159,7 +193,19 @@ export default class Game extends React.Component {
     }
     let user
     if (this.state.user) {
-      user = <Text style={{textAlign: 'center', flex: 1}}>{this.state.user.name}</Text>
+      let invalidMove
+      let moving
+      if (this.state.moving) {
+        moving = <Icon name="clock" style={{fontSize: 16}}></Icon>
+      }
+      if (this.state.invalidMove) {
+        invalidMove = <Icon name="close-circle" style={{fontSize: 16, color: 'red'}}></Icon>
+      }
+      user = <Text style={{textAlign: 'center', flex: 1}}>
+        {this.state.user.name}
+        {moving}
+        {invalidMove}
+      </Text>
     }
     let timer
     if (this.state.configuring) {
@@ -226,7 +272,6 @@ export default class Game extends React.Component {
   }
   async componentDidMount () {
     const config = JSON.parse(await AsyncStorage.getItem('config'))
-    console.log('config Game componentDidMount', config)
     this.setState({ config })
 
     this.playersWatcher = Player.watch(this.onUpdatePlayer)
@@ -259,7 +304,8 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderWidth: 0.5,
-    borderColor: '#d6d7da'
+    borderColor: '#d6d7da',
+    backgroundColor: '#DDDDDD'
   },
   row: {
     flex: 1,

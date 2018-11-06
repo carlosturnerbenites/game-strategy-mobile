@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Alert, ActivityIndicator, AsyncStorage } from 'react-native';
 import { db } from 'strategyMobile/firebase/index.js';
 import Player from 'strategyMobile/api/Models/Player'
-import { Button, Text, Form, Item, Label, Input, Toast, Root, Container } from 'native-base'
+import { Button, Text, Form, Item, Label, Input, Root, Container } from 'native-base'
 import { withNavigation } from 'react-navigation';
 
 class LoginForm extends React.Component {
@@ -10,13 +10,12 @@ class LoginForm extends React.Component {
     super(pros)
     this.state = {
       username: 'P 1',
-      password: null,
+      password: '',
       loading: false
     }
     this.login = this.login.bind(this);
   }
   alertLoginError (err) {
-    console.error(err)
     Alert.alert(
       'Error',
       'Cannot Login',
@@ -34,11 +33,6 @@ class LoginForm extends React.Component {
       .then(user => {
         this.setState({ loading: false })
         AsyncStorage.setItem('name', user.name);
-        Toast.show({
-          text: 'Logged',
-          buttonText: 'Okay',
-          type: "success"
-        })
         navigate('Home', { user })
       })
       .catch(err => {
@@ -49,24 +43,24 @@ class LoginForm extends React.Component {
   render () {
     if (this.state.loading) {
       return (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
       )
     }
     return (
       <Root>
       <Container>
         <Form>
-          <Item
-            floatingLabel
-          >
-            <Label>Username</Label>
+          <Item floatingLabel >
+            <Label>Usuario</Label>
             <Input
               onChangeText={(username) => this.setState({ username })}
               value={this.state.username}
             />
           </Item>
           <Item floatingLabel last>
-            <Label>Password</Label>
+            <Label>Contraseña</Label>
             <Input
               onChangeText={(password) => this.setState({ password })}
               value={this.state.password}

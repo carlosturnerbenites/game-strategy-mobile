@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, AsyncStorage } from 'react-native';
+import { StyleSheet, AsyncStorage, View } from 'react-native';
 import { Button, Text, Container } from 'native-base'
 import { withNavigation } from 'react-navigation';
 
@@ -17,9 +17,9 @@ class Logout extends React.Component {
   }
   render () {
     return (
-      <Container>
-        <Button block onPress={this.logout} primary><Text> Salir </Text></Button>
-      </Container>
+      <View style={{ flexDirection: "row", flex: 1, justifyContent: 'flex-end'}}>
+        <Button onPress={this.logout} danger><Text> Salir </Text></Button>
+      </View>
     );
   }
 }

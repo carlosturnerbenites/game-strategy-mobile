@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, ActivityIndicator } from 'react-native';
 import { db } from 'strategyMobile/firebase/index.js';
 import Room from 'strategyMobile/api/Models/Room'
-import { Text, CardItem, Icon, Right, Card } from 'native-base'
+import { Text, Icon, Button } from 'native-base'
 import { withNavigation } from 'react-navigation';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
@@ -16,16 +16,15 @@ class Rooms extends React.Component {
     // check user
     this.state = {
       user: user,
-      rooms: []
+      rooms: [],
+      loading: false,
     }
   }
   onUpdateRooms = (rooms) => {
-    this.setState(previousState => {
-      previousState.rooms = rooms
-      return previousState
-    });
+    this.setState({ rooms, loading: false });
   }
   loadRooms () {
+    this.setState({ loading: true });
     this.roomsWatcher = Room.watch(this.onUpdateRooms)
   }
   joinToRoom (room) {
@@ -39,25 +38,32 @@ class Rooms extends React.Component {
     })
   }
   render () {
-    /*if (this.state.loading) {
+    if (this.state.loading) {
       return (
         <ActivityIndicator size="large" color="#0000ff" />
       )
-    }*/
+    }
     let rooms = this.state.rooms.map(room => {
-        return <CardItem key={`room_${room.id}`} button onPress={(e) => this.joinToRoom(room)}>
-          <Icon name={room.icon} />
-          <Text>{room.name}</Text>
-          <Right>
-            <Icon name="arrow-forward" />
-          </Right>
-        </CardItem>
+      return <Col key={`room_${room.id}`} size={33}>
+          <Button
+            iconLeft
+            primary
+            onPress={(e) => this.joinToRoom(room)}
+            block
+            style={{marginHorizontal: 5, marginVertical:1}}
+          >
+            <Icon name={room.icon} />
+            <Text>{room.name}</Text>
+          </Button>
+        </Col>
       })
 
     return (
-      <Card>
-        {rooms}
-      </Card>
+      <Grid>
+        <Row style={{flexWrap: 'wrap'}}>
+          {rooms}
+        </Row>
+      </Grid>
     );
   }
   componentDidMount () {

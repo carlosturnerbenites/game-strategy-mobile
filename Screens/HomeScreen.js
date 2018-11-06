@@ -31,16 +31,16 @@ export default class HomeScreen extends React.Component {
           </Col>
         </Row>
 
-        <Row size={30} style={{ flexDirection: 'column'}} >
+        <Row size={30} style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}} >
           <Row>
             <Col size={4}>
-              <Item fixedLabel>
+              <Item fixedLabel regular>
                 <Label>Nombre</Label>
                 <Input onChangeText={(name) => this.setState({ form: { name } })} />
               </Item>
             </Col>
             <Col size={1}>
-              <Button onPress={this.createRoom} primary block>
+              <Button onPress={this.createRoom} success block>
                 <Text>Crear</Text>
               </Button>
             </Col>

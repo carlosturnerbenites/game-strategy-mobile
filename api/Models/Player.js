@@ -38,8 +38,13 @@ class Player extends Model {
 
 
   }
-  setReady () {
-    let data = { ready: true }
+  setReady (ready = true) {
+    if (ready) {
+      if (this.team == -1) {
+        return Promise.reject()
+      }
+    }
+    let data = { ready }
     return db
       .collection(Player.ref)
       .doc(this.id)
@@ -103,15 +108,30 @@ class Player extends Model {
 
   }
   joinToTeam (team) {
-    let data = { team }
-    return db
-      .collection(Player.ref)
-      .doc(this.id)
-      .set(data, {
-        merge: true
-      })
-      .then(() => {
-        return this.fill(data)
+    const MAX_SIZE_TEAM = 1
+
+    return db.collection(Player.ref)
+      .where('team', '==', team)
+      .where('room', '==', this.room)
+      .get()
+      .then(query => {
+        let count = query.docs.length
+
+        if (count >= MAX_SIZE_TEAM) {
+          throw new Error('Mx Size Team')
+        } else {
+          let data = { team }
+          return db
+            .collection(Player.ref)
+            .doc(this.id)
+            .set(data, {
+              merge: true
+            })
+            .then(() => {
+              return this.fill(data)
+            })
+        }
+
       })
   }
   joinToRoom (room) {
@@ -149,7 +169,6 @@ class Player extends Model {
       .get()
       .then(querySnapshot => {
         let count = querySnapshot.docs.length
-        console.log('count', count)
         if (count > 0) {
           return false
         } else {
