@@ -11,6 +11,7 @@ export default class Game extends React.Component {
   playersWatcher = null
   boardWatcher = null
   BoardTrapsWatcher = null
+  BoardFallsWatcher = null
 
   constructor(props) {
     super(props)
@@ -24,6 +25,7 @@ export default class Game extends React.Component {
       this.setState({ board, loading: false })
       this.boardWatcher = this.state.board.watch(this.onUpdateBoard)
       this.BoardTrapsWatcher = this.state.board.watchTraps(this.onUpdateTraps)
+      this.BoardFallsWatcher = this.state.board.watchFalls(this.onUpdateFalls)
     })
 
     this.state = {
@@ -31,6 +33,8 @@ export default class Game extends React.Component {
       board,
       players: [],
       traps: [],
+      newFalls: [],
+      falls: [],
       user,
       room,
       configuring: false,
@@ -130,7 +134,7 @@ export default class Game extends React.Component {
     user.canMoveToBox(box).then(can => {
       if (can) {
         let traps = this.state.traps.filter(trap => trap.x === box.x && trap.y === box.y)
-        user.moveToBox(box, traps).then(newUser => {
+        user.moveToBox(box, traps, this.state.room).then(newUser => {
           this.setState({moving: false})
         })
       } else {
@@ -244,6 +248,7 @@ export default class Game extends React.Component {
                         box={box}
                         player={this.state.players.find(player => player.x === box.x && player.y === box.y)}
                         traps={this.state.traps.filter(trap => trap.x === box.x && trap.y === box.y && trap.team === this.state.user.team)}
+                        falls={this.state.newFalls.filter(fall => fall.x === box.x && fall.y === box.y)}
                         showTraps={this.state.configuring && this.state.play}
                       ></Box>
                     </TouchableOpacity></View>
@@ -274,6 +279,16 @@ export default class Game extends React.Component {
   onUpdateTraps = (traps) => {
     this.setState({ traps })
   }
+  onUpdateFalls = (falls) => {
+    let ids = this.state.falls.map(fall => fall.id) // ids de los ya existentes
+    // console.log('ids', ids)
+    let newFalls = falls.filter(fall => ids.indexOf(fall.id) === -1)
+    // console.log('newFalls', newFalls)
+    this.setState({ falls, newFalls })
+    setTimeout(() => {
+      this.setState({ newFalls: [] })
+    }, 500);
+  }
   async componentDidMount () {
     const config = JSON.parse(await AsyncStorage.getItem('config'))
     this.setState({ config })
@@ -286,6 +301,7 @@ export default class Game extends React.Component {
     if (this.playersWatcher) { this.playersWatcher() }
     if (this.boardWatcher) { this.boardWatcher() }
     if (this.BoardTrapsWatcher) { this.BoardTrapsWatcher() }
+    if (this.BoardFallsWatcher) { this.BoardFallsWatcher() }
   }
   componentWillUnmount () {
     this.unsub()

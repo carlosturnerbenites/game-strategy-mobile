@@ -55,7 +55,7 @@ class Player extends Model {
         return this.fill(data)
       })
   }
-  moveToBox (box, traps) {
+  moveToBox (box, traps, room) {
     let data = {
       x: box.x,
       y: box.y,
@@ -64,6 +64,18 @@ class Player extends Model {
     }
 
     if (traps.length > 0) {
+      traps.forEach(trap => {
+        db
+          .collection('boards')
+          .doc(room.board)
+          .collection('falls')
+          .add({
+            x: trap.x,
+            y: trap.y,
+            user: this.id,
+            date: new Date()
+          })
+      })
       if (traps.length > data.lives) {
         data.lives = 0
       } else {

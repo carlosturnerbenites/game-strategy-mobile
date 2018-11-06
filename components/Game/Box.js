@@ -9,7 +9,8 @@ export default class Board extends React.Component {
       box: props.box,
       player: props.player,
       traps: props.traps,
-      showTraps: props.showTraps
+      showTraps: props.showTraps,
+      falls: props.falls,
     }
   }
   render () {
@@ -27,10 +28,14 @@ export default class Board extends React.Component {
         return <Icon key={index} style={{ fontSize: 14, color: 'red' }} name="flame"></Icon>
       })
     }
+    let falls = this.state.falls.map((trap, index) => {
+      return <Icon key={index} style={{ fontSize: 14, color: 'yellow' }} name="nuclear"></Icon>
+    })
     return (
       <View style={{ flexDirection: "row", flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         {player}
         {traps}
+        {falls}
       </View>
     );
   }
@@ -41,6 +46,7 @@ export default class Board extends React.Component {
       player: nextProps.player,
       traps: nextProps.traps,
       showTraps: nextProps.showTraps,
+      falls: nextProps.falls,
     });
   }
   componentDidMount () {

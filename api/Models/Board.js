@@ -38,6 +38,21 @@ class Board extends Model {
         return onOk(items)
       })
   }
+  watchFalls (onOk) {
+    return db
+      .collection(this.ref)
+      .doc(this.id)
+      .collection('falls')
+      .onSnapshot(querySnapshot => {
+        var items = []
+        querySnapshot.forEach(doc => {
+          let data = doc.data()
+          data.id = doc.id
+          items.push(data)
+        })
+        return onOk(items)
+      })
+  }
 }
 
 export default Board
