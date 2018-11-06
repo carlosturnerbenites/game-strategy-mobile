@@ -6,12 +6,15 @@ import Player from 'strategyMobile/api/Models/Player'
 import Room from 'strategyMobile/api/Models/Room'
 import Box from 'strategyMobile/components/Game/Box.js'
 import Board from 'strategyMobile/api/Models/Board'
+import Sound from 'react-native-sound';
 
 export default class Game extends React.Component {
   playersWatcher = null
   boardWatcher = null
   BoardTrapsWatcher = null
   BoardFallsWatcher = null
+
+  sound = null
 
   constructor(props) {
     super(props)
@@ -208,10 +211,15 @@ export default class Game extends React.Component {
       if (this.state.invalidMove) {
         invalidMove = <Icon name="close-circle" style={{fontSize: 16, color: 'red'}}></Icon>
       }
+      let lives = []
+      for (let index = 0; index < this.state.user.lives; index++) {
+        lives.push(<Icon name="heart" style={{color: 'red'}}></Icon>)
+      }
       user = <Text style={{textAlign: 'center', flex: 1}}>
         <Icon name={this.state.user.icon} style={{ fontSize: 16 }}></Icon>
         {this.state.user.name}
         {moving}
+        {lives}
         {invalidMove}
       </Text>
     }
@@ -281,17 +289,44 @@ export default class Game extends React.Component {
   }
   onUpdateFalls = (falls) => {
     let ids = this.state.falls.map(fall => fall.id) // ids de los ya existentes
-    // console.log('ids', ids)
     let newFalls = falls.filter(fall => ids.indexOf(fall.id) === -1)
-    // console.log('newFalls', newFalls)
-    this.setState({ falls, newFalls })
-    setTimeout(() => {
-      this.setState({ newFalls: [] })
-    }, 500);
+
+    this.setState({ falls })
+
+    if (newFalls.length > 0) {
+      this.setState({ newFalls })
+      this.soundBomb()
+      setTimeout(() => {
+        this.setState({ newFalls: [] })
+      }, 500);
+
+    }
+  }
+  soundBomb = () => {
+    this.sound.play((success) => {
+      if (success) {
+        console.log('successfully finished playing');
+      } else {
+        console.log('playback failed due to audio decoding errors');
+        // reset the player to its uninitialized state (android only)
+        // this is the only option to recover after an error occured and use the player again
+        this.sound.reset();
+      }
+    });
+
   }
   async componentDidMount () {
     const config = JSON.parse(await AsyncStorage.getItem('config'))
     this.setState({ config })
+
+    this.sound = new Sound('bomb.mp3', Sound.MAIN_BUNDLE, (error) => {
+      if (error) {
+        console.log('failed to load the sound', error);
+        return;
+      }
+      // loaded successfully
+      console.log('duration in seconds: ' + this.sound.getDuration() + 'number of channels: ' + this.sound.getNumberOfChannels());
+    });
 
     this.playersWatcher = Player.watch(this.onUpdatePlayer)
     this.timeConfiguring()
