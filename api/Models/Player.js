@@ -120,7 +120,7 @@ class Player extends Model {
 
   }
   joinToTeam (team) {
-    const MAX_SIZE_TEAM = 1
+    const MAX_SIZE_TEAM = 3
 
     return db.collection(Player.ref)
       .where('team', '==', team)
